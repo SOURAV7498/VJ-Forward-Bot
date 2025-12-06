@@ -1,5 +1,19 @@
 # Don't Remove Credit Tg - @VJ_Botz
-# Subscribe YouTube Channel For Amazing Bot https://youtube.com/@Tech_VJ
+**Line 1:** #!/usr/bin/env python3 (ya first line)
+**Line 2 ↓ YE ADD KARO:**
+import os
+import sys
+
+FAST_MODE = os.getenv("FAST_MODE", "0") == "1"
+NO_DB_LOGS = os.getenv("NO_DB_LOGS", "0") == "1" 
+FIX_MEDIA_GROUPS = os.getenv("FIX_MEDIA_GROUPS", "0") == "1"
+
+for arg in sys.argv:
+    if arg == "--fast-mode": os.environ["FAST_MODE"] = "1"
+    if arg == "--no-db-logs": os.environ["NO_DB_LOGS"] = "1"
+    if arg == "--fix-media-groups": os.environ["FIX_MEDIA_GROUPS"] = "1"
+
+print(f"⚡ FAST_MODE: {FAST_MODE} | FIX_MEDIA: {FIX_MEDIA_GROUPS}")# Subscribe YouTube Channel For Amazing Bot https://youtube.com/@Tech_VJ
 # Ask Doubt on telegram @KingVJ01
 
 import asyncio, logging
@@ -73,3 +87,4 @@ if __name__ == "__main__":
 # Don't Remove Credit Tg - @VJ_Botz
 # Subscribe YouTube Channel For Amazing Bot https://youtube.com/@Tech_VJ
 # Ask Doubt on telegram @KingVJ01
+
