@@ -2,26 +2,16 @@
 # Subscribe YouTube Channel For Amazing Bot https://youtube.com/@Tech_VJ
 # Ask Doubt on telegram @KingVJ01
 
-import asyncio, logging, os, sys
+import asyncio, logging
 from config import Config
-from pyrogram import Client as VJ, filters, idle
+from pyrogram import Client as VJ, idle
 from typing import Union, Optional, AsyncGenerator
 from logging.handlers import RotatingFileHandler
 from plugins.regix import restart_forwards
 
-# ========== ULTRA FAST MODE FLAGS ==========
-FAST_MODE = os.getenv("FAST_MODE", "0") == "1"
-NO_DB_LOGS = os.getenv("NO_DB_LOGS", "0") == "1"
-FIX_MEDIA_GROUPS = os.getenv("FIX_MEDIA_GROUPS", "0") == "1"
-
-# CLI Flag support
-for arg in sys.argv:
-    if arg == "--fast-mode": os.environ["FAST_MODE"] = "1"
-    if arg == "--no-db-logs": os.environ["NO_DB_LOGS"] = "1"
-    if arg == "--fix-media-groups": os.environ["FIX_MEDIA_GROUPS"] = "1"
-
-print(f"⚡ FAST_MODE: {FAST_MODE} | FIX_MEDIA: {FIX_MEDIA_GROUPS} | NO_DB_LOGS: {NO_DB_LOGS}")
-# ===========================================
+# Don't Remove Credit Tg - @VJ_Botz
+# Subscribe YouTube Channel For Amazing Bot https://youtube.com/@Tech_VJ
+# Ask Doubt on telegram @KingVJ01
 
 if __name__ == "__main__":
     VJBot = VJ(
@@ -32,35 +22,35 @@ if __name__ == "__main__":
         sleep_threshold=120,
         plugins=dict(root="plugins")
     )  
-    
-    # ========== ULTRA FAST MEDIA GROUP FIX ==========
-    if FIX_MEDIA_GROUPS:
-        @VJBot.on_message(filters.media_group & filters.private)
-        async def handle_media_group(client, message):
-            try:
-                if message.media_group_id:
-                    await asyncio.sleep(1)  # Wait for full group
-                    # Forward ALL files in media group
-                    for i in range(1, 4):  # Check 3 previous messages
-                        try:
-                            prev_msg = await client.get_messages(message.chat.id, message.message_id - i)
-                            if prev_msg and prev_msg.media_group_id == message.media_group_id:
-                                await prev_msg.forward(Config.TARGET_CHANNEL)
-                        except:
-                            pass
-                    await message.forward(Config.TARGET_CHANNEL)
-                    print("✅ COMPLETE Media group forwarded!")
-            except Exception as e:
-                print(f"Media error: {e}")
-    # ================================================
-    
     async def iter_messages(
         self,
         chat_id: Union[int, str],
         limit: int,
         offset: int = 0,
     ) -> Optional[AsyncGenerator["types.Message", None]]:
-        """Iterate through a chat sequentially."""
+        """Iterate through a chat sequentially.
+        This convenience method does the same as repeatedly calling :meth:`~pyrogram.Client.get_messages` in a loop, thus saving
+        you from the hassle of setting up boilerplate code. It is useful for getting the whole chat messages with a
+        single call.
+        Parameters:
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                
+            limit (``int``):
+                Identifier of the last message to be returned.
+                
+            offset (``int``, *optional*):
+                Identifier of the first message to be returned.
+                Defaults to 0.
+        Returns:
+            ``Generator``: A generator yielding :obj:`~pyrogram.types.Message` objects.
+        Example:
+            .. code-block:: python
+                for message in app.iter_messages("pyrogram", 1, 15000):
+                    print(message.text)
+        """
         current = offset
         while True:
             new_diff = min(200, limit - current)
@@ -73,17 +63,9 @@ if __name__ == "__main__":
                
     async def main():
         await VJBot.start()
-        bot_info = await VJBot.get_me()
-        
-        # ULTRA FAST MODE - Skip slow DB restart
-        if FAST_MODE:
-            print("⚡ ULTRA FAST MODE - Direct forwarding active!")
-        else:
-            await restart_forwards(VJBot)
-            
-        print(f"Bot Started! @{bot_info.username}")
-        print("⚡ ULTRA FAST Forward Bot Live! 🚀")
-        print(f"📤 Target Channel: {Config.TARGET_CHANNEL}")
+        bot_info  = await VJBot.get_me()
+        await restart_forwards(VJBot)
+        print("Bot Started.")
         await idle()
 
     asyncio.get_event_loop().run_until_complete(main())
@@ -91,3 +73,5 @@ if __name__ == "__main__":
 # Don't Remove Credit Tg - @VJ_Botz
 # Subscribe YouTube Channel For Amazing Bot https://youtube.com/@Tech_VJ
 # Ask Doubt on telegram @KingVJ01
+
+
