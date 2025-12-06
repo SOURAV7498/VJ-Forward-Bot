@@ -33,29 +33,26 @@ if __name__ == "__main__":
         plugins=dict(root="plugins")
     )  
     
-    # ========== PERFECT MEDIA GROUP - PYROGRAM get_media_group METHOD ==========
+    # ========== ULTRA FAST MEDIA GROUP FIX ==========
     if FIX_MEDIA_GROUPS:
         @VJBot.on_message(filters.media_group & filters.private)
         async def handle_media_group(client, message):
             try:
                 if message.media_group_id:
-                    await asyncio.sleep(2)  # Wait for complete group
-                    # PYROGRAM OFFICIAL METHOD - Get COMPLETE media group
-                    media_group = await client.get_media_group(
-                        message.chat.id, 
-                        message.message_id
-                    )
-                    
-                    # Forward ALL messages in group (perfect order)
-                    for group_msg in media_group:
-                        await group_msg.forward(Config.TARGET_CHANNEL)
-                        await asyncio.sleep(0.2)  # Tiny delay
-                    
-                    print(f"✅ PERFECT Media group ({len(media_group)} files) forwarded!")
-                    return  # Stop processing
+                    await asyncio.sleep(1)  # Wait for full group
+                    # Forward ALL files in media group
+                    for i in range(1, 4):  # Check 3 previous messages
+                        try:
+                            prev_msg = await client.get_messages(message.chat.id, message.message_id - i)
+                            if prev_msg and prev_msg.media_group_id == message.media_group_id:
+                                await prev_msg.forward(Config.TARGET_CHANNEL)
+                        except:
+                            pass
+                    await message.forward(Config.TARGET_CHANNEL)
+                    print("✅ COMPLETE Media group forwarded!")
             except Exception as e:
-                print(f"Media group error: {e}")
-    # ======================================================================
+                print(f"Media error: {e}")
+    # ================================================
     
     async def iter_messages(
         self,
@@ -84,9 +81,9 @@ if __name__ == "__main__":
         else:
             await restart_forwards(VJBot)
             
-        print(f"🤖 Bot Started! @{bot_info.username}")
+        print(f"Bot Started! @{bot_info.username}")
         print("⚡ ULTRA FAST Forward Bot Live! 🚀")
-        print("✅ Media Groups 100% FIXED - No more 'complete' issues!")
+        print(f"📤 Target Channel: {Config.TARGET_CHANNEL}")
         await idle()
 
     asyncio.get_event_loop().run_until_complete(main())
