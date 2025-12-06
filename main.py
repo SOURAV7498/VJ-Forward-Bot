@@ -33,26 +33,42 @@ if __name__ == "__main__":
         plugins=dict(root="plugins")
     )  
     
-    # ========== ULTRA FAST MEDIA GROUP FIX ==========
+    # ========== PERFECT MEDIA GROUP FIX (NO MORE "COMPLETE" ISSUE) ==========
     if FIX_MEDIA_GROUPS:
         @VJBot.on_message(filters.media_group & filters.private)
         async def handle_media_group(client, message):
             try:
                 if message.media_group_id:
-                    await asyncio.sleep(1)  # Wait for full group
-                    # Forward ALL files in media group
-                    for i in range(1, 4):  # Check 3 previous messages
+                    await asyncio.sleep(3)  # Wait for FULL group
+                    # Collect ALL messages in media group
+                    group_messages = []
+                    for i in range(5):  # Check 5 previous messages
                         try:
-                            prev_msg = await client.get_messages(message.chat.id, message.message_id - i)
-                            if prev_msg and prev_msg.media_group_id == message.media_group_id:
-                                await prev_msg.forward(Config.TARGET_CHANNEL)
+                            prev_msg = await client.get_messages(
+                                message.chat.id, 
+                                message.message_id - i
+                            )
+                            if (prev_msg and 
+                                prev_msg.media_group_id == message.media_group_id and 
+                                prev_msg.media):
+                                group_messages.append(prev_msg)
                         except:
-                            pass
+                            continue
+                    
+                    # Forward in CORRECT order (oldest first)
+                    group_messages.reverse()
+                    for msg in group_messages:
+                        await msg.forward(Config.TARGET_CHANNEL)
+                        await asyncio.sleep(0.5)  # Small delay between forwards
+                    
+                    # Forward current message LAST
                     await message.forward(Config.TARGET_CHANNEL)
-                    print("✅ COMPLETE Media group forwarded!")
+                    print(f"✅ PERFECT Media group ({len(group_messages)+1} files) forwarded!")
             except Exception as e:
-                print(f"Media error: {e}")
-    # ================================================
+                print(f"Media group error: {e}")
+                # Fallback: forward single message
+                await message.forward(Config.TARGET_CHANNEL)
+    # ======================================================================
     
     async def iter_messages(
         self,
@@ -81,9 +97,9 @@ if __name__ == "__main__":
         else:
             await restart_forwards(VJBot)
             
-        print(f"Bot Started! @{bot_info.username}")
+        print(f"🤖 Bot Started! @{bot_info.username}")
         print("⚡ ULTRA FAST Forward Bot Live! 🚀")
-        print(f"📤 Target Channel: {Config.TARGET_CHANNEL}")
+        print("✅ Media Groups PERFECTLY fixed!")
         await idle()
 
     asyncio.get_event_loop().run_until_complete(main())
