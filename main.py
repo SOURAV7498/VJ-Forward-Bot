@@ -33,28 +33,26 @@ if __name__ == "__main__":
         plugins=dict(root="plugins")
     )  
     
-    # ========== MEDIA GROUP FIX (2-3 files ek saath) ==========
+    # ========== ULTRA FAST MEDIA GROUP FIX ==========
     if FIX_MEDIA_GROUPS:
         @VJBot.on_message(filters.media_group & filters.private)
         async def handle_media_group(client, message):
             try:
                 if message.media_group_id:
-                    await asyncio.sleep(1)
-                    # Get all messages in media group
-                    media_group = await client.get_messages(
-                        message.chat.id, 
-                        message.message_id
-                    )
-                    # Forward complete group
-                    await asyncio.gather(*[
-                        msg.forward(getattr(Config, 'TARGET_CHANNEL', -1000000000000))
-                        for msg in media_group 
-                        if msg and msg.media
-                    ])
-                    print("✅ Media group fixed! All files forwarded!")
+                    await asyncio.sleep(1)  # Wait for full group
+                    # Forward ALL files in media group
+                    for i in range(1, 4):  # Check 3 previous messages
+                        try:
+                            prev_msg = await client.get_messages(message.chat.id, message.message_id - i)
+                            if prev_msg and prev_msg.media_group_id == message.media_group_id:
+                                await prev_msg.forward(Config.TARGET_CHANNEL)
+                        except:
+                            pass
+                    await message.forward(Config.TARGET_CHANNEL)
+                    print("✅ COMPLETE Media group forwarded!")
             except Exception as e:
-                print(f"Media group error: {e}")
-    # ==========================================================
+                print(f"Media error: {e}")
+    # ================================================
     
     async def iter_messages(
         self,
@@ -75,16 +73,17 @@ if __name__ == "__main__":
                
     async def main():
         await VJBot.start()
-        bot_info  = await VJBot.get_me()
+        bot_info = await VJBot.get_me()
         
         # ULTRA FAST MODE - Skip slow DB restart
         if FAST_MODE:
-            print("⚡ ULTRA FAST MODE - Skipping slow DB checks!")
+            print("⚡ ULTRA FAST MODE - Direct forwarding active!")
         else:
             await restart_forwards(VJBot)
             
-        print("Bot Started.")
+        print(f"Bot Started! @{bot_info.username}")
         print("⚡ ULTRA FAST Forward Bot Live! 🚀")
+        print(f"📤 Target Channel: {Config.TARGET_CHANNEL}")
         await idle()
 
     asyncio.get_event_loop().run_until_complete(main())
